@@ -139,10 +139,11 @@ public class LineSplitter {
                         if (prefix != null) {
                             if (builder.charAt(term.getOffe()) == ' ') {
                                 builder.insert(term.getOffe(), "&" + prefix);
+                                addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe() + 1));
                             } else {
                                 builder.insert(term.getOffe(), "& " + prefix);
+                                addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe() + 2));
                             }
-                            addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe() + 2));
                         } else {
                             builder.insert(term.getOffe(), '&');
                             addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe()));

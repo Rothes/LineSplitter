@@ -90,15 +90,15 @@ public class LineSplitter {
             return str;
         }
 
-        String result = getSplited(str, type == MessageType.ACCESS ? 54 : 45, prefix);
+        String result = getSplited(str, type == MessageType.ACCESS ? 54 : 45, key.contains("menu") ? "#" : "&", prefix);
         if (result.split("&").length > 3) {
             System.out.println("\033[0;91m警告, 此 key 换行达到三次: \033[0m" + key);
         }
         return result;
     }
 
-    private static String getSplited(String str, int weigh, String prefix) {
-        String[] split = str.split("&");
+    private static String getSplited(String str, int weigh, String newLine, String prefix) {
+        String[] split = str.split(newLine);
         int array = 0;
         String edited = null;
         OUT:
@@ -138,14 +138,14 @@ public class LineSplitter {
                     if (length < toParse.length() && getWeighScore(toParse.substring(0, length)) > weigh) {
                         if (prefix != null) {
                             if (builder.charAt(term.getOffe()) == ' ') {
-                                builder.insert(term.getOffe(), "&" + prefix);
+                                builder.insert(term.getOffe(), newLine + prefix);
                                 addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe(), ("&" + prefix).length()), ("& " + prefix).length());
                             } else {
-                                builder.insert(term.getOffe(), "& " + prefix);
+                                builder.insert(term.getOffe(), newLine + " " + prefix);
                                 addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe(), ("& " + prefix).length()), ("& " + prefix).length());
                             }
                         } else {
-                            builder.insert(term.getOffe(), '&');
+                            builder.insert(term.getOffe(), newLine);
                             addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe(), 1), 1);
                         }
                         edited = builder.append(suf).toString();
@@ -163,15 +163,15 @@ public class LineSplitter {
             } else {
                 builder.append(split[i]);
             }
-            builder.append('&');
+            builder.append(newLine);
         }
-        if (builder.length() > 0 && builder.charAt(builder.length() - 1) == '&') {
+        if (builder.length() > 0 && builder.charAt(builder.length() - 1) == newLine.indexOf(0)) {
             builder.deleteCharAt(builder.length() - 1);
         }
         if (edited == null) {
             return builder.toString();
         } else {
-            return getSplited(builder.toString(), weigh, prefix);
+            return getSplited(builder.toString(), weigh, newLine, prefix);
         }
     }
 

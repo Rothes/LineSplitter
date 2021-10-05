@@ -139,14 +139,14 @@ public class LineSplitter {
                         if (prefix != null) {
                             if (builder.charAt(term.getOffe()) == ' ') {
                                 builder.insert(term.getOffe(), "&" + prefix);
-                                addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe() + 1));
+                                addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe(), ("&" + prefix).length()), ("& " + prefix).length());
                             } else {
                                 builder.insert(term.getOffe(), "& " + prefix);
-                                addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe() + 2));
+                                addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe(), ("& " + prefix).length()), ("& " + prefix).length());
                             }
                         } else {
                             builder.insert(term.getOffe(), '&');
-                            addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe()));
+                            addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe(), 1), 1);
                         }
                         edited = builder.append(suf).toString();
                         break OUT;
@@ -201,13 +201,13 @@ public class LineSplitter {
     }
 
     @SuppressWarnings("unchecked")
-    private static int addPlaceholders(StringBuilder builder, ListOrderedMap map, int insertIndex) {
+    private static int addPlaceholders(StringBuilder builder, ListOrderedMap map, int insertIndex, int insertLength) {
         List<Integer> list = (List<Integer>) map.keyList();
         int result = insertIndex;
         for (Integer key : list) {
             String ph = (String) map.get(key);
             if (key > insertIndex) {
-                builder.insert(key + 1, ph);
+                builder.insert(key + insertLength, ph);
                 result += ph.length();
             } else {
                 builder.insert(key, ph);

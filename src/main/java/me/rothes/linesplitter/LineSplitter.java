@@ -28,7 +28,7 @@ public class LineSplitter {
     private static Pattern messagePattern = Pattern.compile("^\\\\[A-Z0-9]{2}(\\*)?");
     private static Pattern enPattern = Pattern.compile("[a-zA-Z0-9|!@#$%^&*()\\[\\],./:; ]");
 
-    private static Pattern formats1 = Pattern.compile("\\\\[A-Z0-9]{2}");
+    private static Pattern formats1 = Pattern.compile("\\\\[A-Za-z0-9]{2}");
     private static Pattern formats2 = Pattern.compile("[~^][1-9]");
     private static Pattern suffix = Pattern.compile("/(%)?$");
 

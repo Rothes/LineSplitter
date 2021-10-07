@@ -90,7 +90,12 @@ public class LineSplitter {
             return str;
         }
 
-        String result = getSplited(str, type == MessageType.ACCESS ? 54 : 45, key.contains("menu") ? "#" : "&", prefix);
+        String result = str;
+        try {
+            result = getSplited(str, type == MessageType.ACCESS ? 54 : 45, (key.contains("menu") || key.contains("info")) ? "#" : "&", prefix);
+        } catch (StackOverflowError e) {
+            System.out.println("\033[0;91m无法处理此key，颜色间字符长度过长，请手动在插入换行: \033[0m" + key);
+        }
         if (result.split("&").length > 3) {
             System.out.println("\033[0;91m警告, 此 key 换行达到三次: \033[0m" + key);
         }
@@ -171,7 +176,7 @@ public class LineSplitter {
         if (edited == null) {
             return builder.toString();
         } else {
-            return getSplited(builder.toString(), weigh, newLine, prefix);
+            return getSplited(fixColor(builder.toString()), weigh, newLine, prefix);
         }
     }
 
@@ -186,6 +191,20 @@ public class LineSplitter {
             }
         }
         return score;
+    }
+
+
+    private static Pattern colorFix = Pattern.compile("([ ]*\\\\[A-Za-z0-9]{2})([^&#]*)([&#][ ]*)([^\\\\]*)(\\\\[A-Za-z0-9]{2})");
+
+    private static String fixColor(String str) {
+        Matcher matcher = colorFix.matcher(str);
+        while (matcher.find()) {
+            String plain = matcher.group(1).substring(matcher.group(1).length() - 3);
+            if (plain.equals(matcher.group(5)) && (matcher.group(3).startsWith("&") || matcher.group(3).startsWith("#"))) {
+                return fixColor(str.replace(matcher.group(0), matcher.group(3) + plain + matcher.group(2) + matcher.group(4) + matcher.group(5)));
+            }
+        }
+        return str;
     }
 
     @SuppressWarnings("unchecked")

@@ -32,6 +32,8 @@ public class LineSplitter {
     private static Pattern formats2 = Pattern.compile("[~^][1-9]");
     private static Pattern suffix = Pattern.compile("/(%)?$");
 
+    private static Pattern colorFix = Pattern.compile("([ ]*\\\\[A-Za-z0-9]{2})([^&#]*)([&#][ ]*)([^\\\\]*)(\\\\[A-Za-z0-9]{2})");
+
     private enum MessageType {
         TALK,
         ACCESS
@@ -61,7 +63,7 @@ public class LineSplitter {
 
         // 保存文件
         try {
-            String result = new GsonBuilder().setPrettyPrinting() /* 格式化 */
+            String result = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping() /* 格式化 */
                     .create().toJson(jsonElement);
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
             writer.write(result);
@@ -144,7 +146,7 @@ public class LineSplitter {
                         if (prefix != null) {
                             if (builder.charAt(term.getOffe()) == ' ') {
                                 builder.insert(term.getOffe(), newLine + prefix);
-                                addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe(), ("&" + prefix).length()), ("& " + prefix).length());
+                                addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe(), ("&" + prefix).length()), ("&" + prefix).length());
                             } else {
                                 builder.insert(term.getOffe(), newLine + " " + prefix);
                                 addPlaceholders(builder, fm1, addPlaceholders(builder, fm2, term.getOffe(), ("& " + prefix).length()), ("& " + prefix).length());
@@ -192,9 +194,6 @@ public class LineSplitter {
         }
         return score;
     }
-
-
-    private static Pattern colorFix = Pattern.compile("([ ]*\\\\[A-Za-z0-9]{2})([^&#]*)([&#][ ]*)([^\\\\]*)(\\\\[A-Za-z0-9]{2})");
 
     private static String fixColor(String str) {
         Matcher matcher = colorFix.matcher(str);

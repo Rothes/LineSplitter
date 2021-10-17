@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public class LineSplitter {
 
     private static Pattern messagePattern = Pattern.compile("^\\\\[A-Z0-9]{2}(\\*)?");
-    private static Pattern enPattern = Pattern.compile("[a-zA-Z0-9|!@#$%^&*()\\[\\],./:; ]");
+    private static Pattern enPattern = Pattern.compile("[a-zA-Z0-9|!@#$%^&*()\\[\\],./:;?<>\"' ]");
 
     private static Pattern formats1 = Pattern.compile("\\\\[A-Za-z0-9]{2}");
     private static Pattern formats2 = Pattern.compile("[~^][1-9]");
@@ -94,7 +94,7 @@ public class LineSplitter {
 
         String result = str;
         try {
-            result = getSplited(str, type == MessageType.ACCESS ? 54 : 45, (key.contains("menu") || key.contains("info")) ? "#" : "&", prefix);
+            result = getSplited(str, type == MessageType.ACCESS ? 39 : 30, (key.contains("menu") || key.contains("info")) ? "#" : "&", prefix);
         } catch (StackOverflowError e) {
             System.out.println("\033[0;91m无法处理此key，颜色间字符长度过长，请手动在插入换行: \033[0m" + key);
         }
@@ -137,12 +137,12 @@ public class LineSplitter {
 
             // 开始处理
             String toParse = builder.toString();
-            int score = getWeighScore(toParse);
+            int score = getWidthScore(toParse);
             if (score > weigh) {
                 List<Term> terms = NlpAnalysis.parse(toParse).getTerms();
                 for (Term term : terms) {
                     int length = term.getOffe() + term.getName().length();
-                    if (length < toParse.length() && getWeighScore(toParse.substring(0, length)) > weigh) {
+                    if (length < toParse.length() && getWidthScore(toParse.substring(0, length)) > weigh) {
                         if (prefix != null) {
                             if (builder.charAt(term.getOffe()) == ' ') {
                                 builder.insert(term.getOffe(), newLine + prefix);
@@ -182,14 +182,14 @@ public class LineSplitter {
         }
     }
 
-    private static int getWeighScore(String str) {
+    private static int getWidthScore(String str) {
         int score = 0;
         for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);
             if (enPattern.matcher(String.valueOf(c)).matches()) {
-                score += 2;
+                score += 1;
             } else {
-                score += 3;
+                score += 2;
             }
         }
         return score;

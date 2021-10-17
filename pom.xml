@@ -6,7 +6,7 @@
 
     <groupId>me.rothes</groupId>
     <artifactId>line-splitter</artifactId>
-    <version>1.1.9</version>
+    <version>1.2.1</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
